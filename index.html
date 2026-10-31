@@ -2,333 +2,302 @@
 <html lang="zh-TW">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>健身打卡</title>
   
-  <!-- 支援手機安裝為獨立 App (PWA Web App) -->
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <!-- PWA 全螢幕與圖示配置 -->
+  <meta name="theme-color" content="#DA4A1C">
   <meta name="mobile-web-app-capable" content="yes">
-  <meta name="theme-color" content="#FBF7F0">
-  <link rel="apple-touch-icon" href="https://api.iconify.design/lucide:dumbbell.svg?color=%23f15a24">
-
-  <!-- Tailwind CSS -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Lucide Icons -->
-  <script src="https://unpkg.com/lucide@latest"></script>
-  <!-- Google Fonts -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏋️</text></svg>">
+  <link rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%22%E5%81%A5%E8%BA%AB%E6%89%93%E5%8D%A1%22%2C%22short_name%22%3A%22%E6%89%93%E5%8D%A1%22%2C%22start_url%22%3A%22.%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%23FBF7F0%22%2C%22theme_color%22%3A%22%23DA4A1C%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22data%3Aimage%2Fsvg%2Bxml%2C%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20viewBox%3D'0%200%20100%20100'%3E%3Crect%20width%3D'100'%20height%3D'100'%20rx%3D'20'%20fill%3D'%23DA4A1C'%2F%3E%3Ctext%20x%3D'50'%20y%3D'68'%20font-size%3D'60'%20text-anchor%3D'middle'%20fill%3D'white'%3E%F0%9F%8F%8B%3C%2Ftext%3E%3C%2Fsvg%3E%22%2C%22sizes%22%3A%22192x192%20512x512%22%2C%22type%22%3A%22image%2Fsvg%2Bxml%22%2C%22purpose%22%3A%22any%20maskable%22%7D%5D%7D">
 
   <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; -webkit-tap-highlight-color: transparent; }
     body {
-      font-family: 'Noto Sans TC', -apple-system, BlinkMacSystemFont, sans-serif;
-      background-color: #F4EFE6;
-      -webkit-tap-highlight-color: transparent;
-      overscroll-behavior-y: none;
+      background-color: #FBF7F0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      padding: 24px 16px;
+      color: #333;
     }
-
-    /* 掛扣打孔造型 */
-    .calendar-binder-ring {
+    .calendar-container {
+      width: 100%;
+      max-width: 400px;
+      background: #FFFFFF;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.06);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    .cal-header {
+      background-color: #DA4A1C;
+      color: #FFFFFF;
+      padding: 18px 20px 24px;
+      position: relative;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+    }
+    .binder-rings {
+      position: absolute;
+      top: -10px;
+      left: 0;
+      right: 0;
+      display: flex;
+      justify-content: space-around;
+      padding: 0 20px;
+    }
+    .ring {
       width: 14px;
-      height: 18px;
-      background-color: #FFFFFF;
-      border-radius: 3px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+      height: 22px;
+      background: #E5E0D8;
+      border-radius: 7px;
+      box-shadow: inset 0 2px 4px rgba(0,0,0,0.25);
     }
-
-    /* 日期按鈕觸控微反饋 */
-    .day-btn {
-      transition: all 0.15s ease-out;
-      user-select: none;
+    .nav-arrow {
+      background: rgba(255,255,255,0.2);
+      border: none;
+      color: white;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      font-size: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
     }
-    .day-btn:active {
-      transform: scale(0.88);
+    .month-nav { display: flex; align-items: center; gap: 8px; }
+    .month-display { line-height: 1; }
+    .year-txt { font-size: 13px; opacity: 0.85; font-weight: 500; margin-bottom: 2px; }
+    .month-num { font-size: 34px; font-weight: 800; letter-spacing: -0.5px; }
+    .stats-display { text-align: right; }
+    .stats-label { font-size: 13px; opacity: 0.9; }
+    .stats-days { font-size: 32px; font-weight: 800; margin-left: 2px; }
+    .cal-body { padding: 20px 16px; }
+    .weekdays-row {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      text-align: center;
+      color: #7A7A7A;
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 12px;
     }
-
-    /* 左右換月滑動過渡動畫 */
-    .swipe-container {
-      touch-action: pan-y;
-      transition: transform 0.25s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.25s ease;
+    .days-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      row-gap: 12px;
+      transition: transform 0.2s ease-out;
     }
-    .slide-left {
-      transform: translateX(-24px);
-      opacity: 0;
+    .day-cell {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      height: 44px;
+      cursor: pointer;
     }
-    .slide-right {
-      transform: translateX(24px);
-      opacity: 0;
+    .day-circle {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 15px;
+      font-weight: 500;
+      color: #333333;
+      position: relative;
     }
+    .checked-in .day-circle {
+      background-color: #E7B482;
+      color: #FFFFFF;
+      font-weight: 700;
+    }
+    .milestone::after {
+      content: '✓';
+      position: absolute;
+      top: -3px;
+      right: -3px;
+      background-color: #E54B24;
+      color: #FFFFFF;
+      font-size: 9px;
+      width: 15px;
+      height: 15px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1.5px solid #FFFFFF;
+      font-weight: bold;
+    }
+    .is-today .day-circle { outline: 2px dashed #DA4A1C; outline-offset: 2px; }
+    .other-month { opacity: 0; pointer-events: none; }
+    .action-container { width: 100%; max-width: 400px; margin-top: 24px; }
+    .btn-checkin {
+      width: 100%;
+      padding: 15px 0;
+      border-radius: 14px;
+      border: none;
+      font-size: 17px;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+      transition: all 0.2s ease;
+    }
+    .btn-pending { background-color: #DA4A1C; color: #FFFFFF; }
+    .btn-done { background-color: #9AA4B2; color: #FFFFFF; }
   </style>
 </head>
-<body class="min-h-screen flex items-center justify-center p-3 sm:p-6 text-gray-800">
+<body>
 
-  <!-- 手機尺寸容器 -->
-  <div class="w-full max-w-[400px] flex flex-col justify-between py-4 select-none">
-    
-    <!-- 頂部日曆卡片 (完全復刻原圖經典暖橘掛曆樣式) -->
-    <div id="calendar-card" class="bg-white rounded-3xl shadow-[0_10px_30px_rgba(0,0,0,0.06)] overflow-hidden border border-amber-100/60 swipe-container">
-      
-      <!-- 掛曆頭部 (橘紅色背景 + 復古吊扣 + 換月箭頭) -->
-      <div class="relative bg-gradient-to-r from-[#EB4D1B] via-[#EF5422] to-[#F15A24] px-5 pt-4 pb-3.5 text-white">
-        <!-- 頂部 3 個吊扣 -->
-        <div class="absolute -top-1 left-0 right-0 flex justify-around px-10 pointer-events-none">
-          <div class="calendar-binder-ring"></div>
-          <div class="calendar-binder-ring"></div>
-          <div class="calendar-binder-ring"></div>
+  <div class="calendar-container" id="calendarCard">
+    <div class="cal-header">
+      <div class="binder-rings">
+        <div class="ring"></div><div class="ring"></div>
+        <div class="ring"></div><div class="ring"></div>
+      </div>
+      <div class="month-nav">
+        <button class="nav-arrow" id="prevBtn">❮</button>
+        <div class="month-display">
+          <div class="year-txt" id="yearLabel">2026</div>
+          <div class="month-num" id="monthLabel">10</div>
         </div>
-
-        <!-- 月份導航與累積打卡數據 -->
-        <div class="flex items-end justify-between mt-1">
-          <!-- 年月切換 -->
-          <div class="flex items-center space-x-2">
-            <button id="prev-month-btn" class="p-1.5 -ml-1.5 hover:bg-white/20 active:scale-90 rounded-full transition" aria-label="上個月">
-              <i data-lucide="chevron-left" class="w-5 h-5 stroke-[2.5]"></i>
-            </button>
-            <div>
-              <span id="display-year" class="text-xs opacity-90 font-medium block leading-none">2026</span>
-              <span id="display-month" class="text-3xl font-black tracking-tight leading-none">10</span>
-            </div>
-            <button id="next-month-btn" class="p-1.5 hover:bg-white/20 active:scale-90 rounded-full transition" aria-label="下個月">
-              <i data-lucide="chevron-right" class="w-5 h-5 stroke-[2.5]"></i>
-            </button>
-          </div>
-
-          <!-- 本月累積天數 -->
-          <div class="text-right pb-0.5">
-            <span class="text-xs font-medium opacity-90 block">本月已健身累積</span>
-            <div class="text-sm font-semibold">
-              <span id="month-count" class="text-3xl font-black text-white">0</span> 天
-            </div>
-          </div>
-        </div>
+        <button class="nav-arrow" id="nextBtn">❯</button>
       </div>
-
-      <!-- 星期表頭 (日 ~ 六) -->
-      <div class="grid grid-cols-7 text-center text-xs font-bold text-gray-400 pt-4 pb-2 border-b border-gray-50">
-        <div>日</div>
-        <div>一</div>
-        <div>二</div>
-        <div>三</div>
-        <div>四</div>
-        <div>五</div>
-        <div>六</div>
-      </div>
-
-      <!-- 日曆網格區域 (支援左右手勢滑動) -->
-      <div id="calendar-grid" class="grid grid-cols-7 gap-y-3.5 gap-x-1 p-3.5 pb-6 text-center">
-        <!-- 由 JavaScript 動態繪製 -->
-      </div>
-
-    </div>
-
-    <!-- 底部操作區域：今日打卡按鈕 & 手勢小提示 -->
-    <div class="mt-5 space-y-3 px-1">
-      <button id="today-toggle-btn" class="w-full py-4 rounded-2xl font-bold text-base transition-all duration-200 shadow-md flex items-center justify-center space-x-2">
-        <i data-lucide="dumbbell" class="w-5 h-5"></i>
-        <span id="today-toggle-text">今日健身打卡</span>
-      </button>
-
-      <div class="flex items-center justify-between text-[11px] text-stone-400 px-1 font-medium">
-        <span>👈 左右滑動日曆可換月份</span>
-        <span>點選任一天可補卡/補登</span>
+      <div class="stats-display">
+        <span class="stats-label">本月已健身累積</span>
+        <span class="stats-days" id="countLabel">0</span><span style="font-size:14px; margin-left:2px;">天</span>
       </div>
     </div>
 
+    <div class="cal-body">
+      <div class="weekdays-row">
+        <span>日</span><span>一</span><span>二</span><span>三</span><span>四</span><span>五</span><span>六</span>
+      </div>
+      <div class="days-grid" id="daysGrid"></div>
+    </div>
+  </div>
+
+  <div class="action-container">
+    <button class="btn-checkin btn-pending" id="todayBtn">今日健身打卡</button>
   </div>
 
   <script>
-    // 1. 初始化日誌儲存：從 localStorage 讀取紀錄 (格式：['2026-10-01', '2026-10-04', ...])
-    const STORAGE_KEY = 'fitness_checkin_records';
-    let checkinRecords = new Set(JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'));
+    const STORAGE_KEY = 'workout_records_data';
+    let checkins = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
 
-    function saveRecords() {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify([...checkinRecords]));
-    }
+    let currentYear = new Date().getFullYear();
+    let currentMonth = new Date().getMonth();
 
-    // 當前檢視的年月 (預設為當前日期)
-    const now = new Date();
-    let viewYear = now.getFullYear();
-    let viewMonth = now.getMonth(); // 0-indexed (0: 一月, 9: 十月)
+    const yearLabel = document.getElementById('yearLabel');
+    const monthLabel = document.getElementById('monthLabel');
+    const countLabel = document.getElementById('countLabel');
+    const daysGrid = document.getElementById('daysGrid');
+    const todayBtn = document.getElementById('todayBtn');
+    const calendarCard = document.getElementById('calendarCard');
 
-    // 今天日期代碼 (YYYY-MM-DD)
-    const todayStr = formatDate(now.getFullYear(), now.getMonth(), now.getDate());
-
-    // 格式化日期為 YYYY-MM-DD
     function formatDate(y, m, d) {
-      const mm = String(m + 1).padStart(2, '0');
-      const dd = String(d).padStart(2, '0');
-      return `${y}-${mm}-${dd}`;
+      return `${y}-${String(m + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
     }
 
-    const calendarGrid = document.getElementById('calendar-grid');
-    const displayYear = document.getElementById('display-year');
-    const displayMonth = document.getElementById('display-month');
-    const monthCount = document.getElementById('month-count');
-    const todayToggleBtn = document.getElementById('today-toggle-btn');
-    const todayToggleText = document.getElementById('today-toggle-text');
-    const calendarCard = document.getElementById('calendar-card');
-
-    // 2. 渲染當前月份的日曆
     function renderCalendar() {
-      displayYear.textContent = viewYear;
-      displayMonth.textContent = viewMonth + 1;
+      yearLabel.textContent = currentYear;
+      monthLabel.textContent = currentMonth + 1;
+      daysGrid.innerHTML = '';
 
-      calendarGrid.innerHTML = '';
+      const firstDayIndex = new Date(currentYear, currentMonth, 1).getDay();
+      const totalDays = new Date(currentYear, currentMonth + 1, 0).getDate();
 
-      // 計算本月第 1 天是星期幾 (0: 週日, 1: 週一...)
-      const firstDayIndex = new Date(viewYear, viewMonth, 1).getDay();
-      // 計算本月共有多少天
-      const totalDaysInMonth = new Date(viewYear, viewMonth + 1, 0).getDate();
+      const prefix = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}`;
+      const currentMonthChecks = checkins.filter(d => d.startsWith(prefix)).sort();
+      countLabel.textContent = currentMonthChecks.length;
 
-      // 計算當月打卡總次數
-      let currentMonthCheckins = 0;
+      const todayStr = formatDate(new Date().getFullYear(), new Date().getMonth(), new Date().getDate());
+      const isTodayChecked = checkins.includes(todayStr);
 
-      // 產生 1 號之前的空白空格
+      if (isTodayChecked) {
+        todayBtn.textContent = '今日已打卡';
+        todayBtn.className = 'btn-checkin btn-done';
+      } else {
+        todayBtn.textContent = '今日健身打卡';
+        todayBtn.className = 'btn-checkin btn-pending';
+      }
+
       for (let i = 0; i < firstDayIndex; i++) {
         const emptyCell = document.createElement('div');
-        emptyCell.className = 'w-9 h-9';
-        calendarGrid.appendChild(emptyCell);
+        emptyCell.className = 'day-cell other-month';
+        daysGrid.appendChild(emptyCell);
       }
 
-      // 產生 1 ~ 最後一天
-      for (let day = 1; day <= totalDaysInMonth; day++) {
-        const dateKey = formatDate(viewYear, viewMonth, day);
-        const isChecked = checkinRecords.has(dateKey);
-        const isToday = (dateKey === todayStr);
+      for (let day = 1; day <= totalDays; day++) {
+        const dateStr = formatDate(currentYear, currentMonth, day);
+        const cell = document.createElement('div');
+        cell.className = 'day-cell';
 
-        if (isChecked) currentMonthCheckins++;
+        const circle = document.createElement('div');
+        circle.className = 'day-circle';
+        circle.textContent = day;
 
-        const cellWrapper = document.createElement('div');
-        cellWrapper.className = 'flex justify-center items-center';
+        if (dateStr === todayStr) cell.classList.add('is-today');
 
-        const btn = document.createElement('button');
-        btn.className = 'day-btn relative w-9 h-9 rounded-full flex items-center justify-center text-sm font-semibold';
-
-        if (isChecked) {
-          // 復刻打卡造型：暖橘駝色底色 + 白色粗體文字
-          btn.classList.add('bg-[#E7B482]', 'text-white', 'shadow-sm');
-
-          // 若當月累計打卡達到 7 次、14 次、21 次，在當天標上紅色小勾勾徽章
-          if (currentMonthCheckins === 7 || currentMonthCheckins === 14 || currentMonthCheckins === 21) {
-            const badge = document.createElement('div');
-            badge.className = 'absolute -top-1 -right-1 w-4 h-4 bg-[#E4532B] rounded-full border-2 border-white flex items-center justify-center text-white shadow-sm';
-            badge.innerHTML = `<svg class="w-2.5 h-2.5 stroke-[3]" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6L9 17l-5-5"/></svg>`;
-            btn.appendChild(badge);
+        if (checkins.includes(dateStr)) {
+          cell.classList.add('checked-in');
+          const dayIndex = currentMonthChecks.indexOf(dateStr) + 1;
+          if (dayIndex === 7 || dayIndex === 14 || dayIndex === 21) {
+            cell.classList.add('milestone');
           }
-        } else {
-          // 未打卡樣式
-          btn.classList.add('text-gray-700', 'hover:bg-orange-50');
         }
 
-        // 今天特殊外框高亮提示
-        if (isToday) {
-          btn.classList.add('ring-2', 'ring-[#F15A24]', 'ring-offset-1');
-        }
-
-        const span = document.createElement('span');
-        span.textContent = day;
-        btn.prepend(span);
-
-        // 點擊任一日期切換打卡
-        btn.addEventListener('click', () => {
-          toggleDate(dateKey);
-        });
-
-        cellWrapper.appendChild(btn);
-        calendarGrid.appendChild(cellWrapper);
+        cell.onclick = () => toggleDate(dateStr);
+        cell.appendChild(circle);
+        daysGrid.appendChild(cell);
       }
-
-      // 更新本月累計打卡天數
-      monthCount.textContent = currentMonthCheckins;
-
-      // 更新下方今日按鈕狀態
-      updateTodayButton();
     }
 
-    // 3. 切換打卡狀態並儲存
-    function toggleDate(dateKey) {
-      if (checkinRecords.has(dateKey)) {
-        checkinRecords.delete(dateKey);
+    function toggleDate(dateStr) {
+      if (checkins.includes(dateStr)) {
+        checkins = checkins.filter(d => d !== dateStr);
       } else {
-        checkinRecords.add(dateKey);
+        checkins.push(dateStr);
       }
-      saveRecords();
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(checkins));
       renderCalendar();
     }
 
-    // 4. 更新底部按鈕外觀
-    function updateTodayButton() {
-      const isTodayChecked = checkinRecords.has(todayStr);
-      if (isTodayChecked) {
-        todayToggleText.textContent = '今日已健身 (已打卡)';
-        todayToggleBtn.className = 'w-full py-4 rounded-2xl font-bold text-base bg-[#9AA4B2] text-white cursor-pointer active:scale-[0.98] transition shadow flex items-center justify-center space-x-2';
-      } else {
-        todayToggleText.textContent = '今日健身完成！點此打卡';
-        todayToggleBtn.className = 'w-full py-4 rounded-2xl font-bold text-base bg-gradient-to-r from-[#FF5621] to-[#E63F0B] text-white hover:brightness-105 active:scale-[0.98] transition shadow-lg flex items-center justify-center space-x-2';
-      }
-    }
-
-    // 底部按鈕點選
-    todayToggleBtn.addEventListener('click', () => {
+    todayBtn.onclick = () => {
+      const todayStr = formatDate(new Date().getFullYear(), new Date().getMonth(), new Date().getDate());
       toggleDate(todayStr);
-    });
+    };
 
-    // 5. 月份切換邏輯
-    function changeMonth(delta) {
-      viewMonth += delta;
-      if (viewMonth > 11) {
-        viewMonth = 0;
-        viewYear++;
-      } else if (viewMonth < 0) {
-        viewMonth = 11;
-        viewYear--;
-      }
+    document.getElementById('prevBtn').onclick = () => {
+      currentMonth--;
+      if (currentMonth < 0) { currentMonth = 11; currentYear--; }
       renderCalendar();
-    }
+    };
 
-    document.getElementById('prev-month-btn').addEventListener('click', () => changeMonth(-1));
-    document.getElementById('next-month-btn').addEventListener('click', () => changeMonth(1));
+    document.getElementById('nextBtn').onclick = () => {
+      currentMonth++;
+      if (currentMonth > 11) { currentMonth = 0; currentYear++; }
+      renderCalendar();
+    };
 
-    // 6. 觸控左右滑動切換月份 (Swipe Gestures)
-    let touchStartX = 0;
-    let touchStartY = 0;
+    let startX = 0;
+    calendarCard.addEventListener('touchstart', e => { startX = e.touches[0].clientX; }, {passive: true});
+    calendarCard.addEventListener('touchend', e => {
+      const diffX = e.changedTouches[0].clientX - startX;
+      if (diffX > 40) document.getElementById('prevBtn').click();
+      else if (diffX < -40) document.getElementById('nextBtn').click();
+    }, {passive: true});
 
-    calendarCard.addEventListener('touchstart', (e) => {
-      touchStartX = e.changedTouches[0].screenX;
-      touchStartY = e.changedTouches[0].screenY;
-    }, { passive: true });
-
-    calendarCard.addEventListener('touchend', (e) => {
-      const touchEndX = e.changedTouches[0].screenX;
-      const touchEndY = e.changedTouches[0].screenY;
-      const diffX = touchEndX - touchStartX;
-      const diffY = touchEndY - touchStartY;
-
-      // 確保是水平滑動（水平距離 > 40px，且大於垂直移動以防誤判）
-      if (Math.abs(diffX) > 40 && Math.abs(diffX) > Math.abs(diffY)) {
-        if (diffX > 0) {
-          // 向右滑 -> 上個月
-          calendarCard.classList.add('slide-right');
-          setTimeout(() => {
-            changeMonth(-1);
-            calendarCard.classList.remove('slide-right');
-          }, 150);
-        } else {
-          // 向左滑 -> 下個月
-          calendarCard.classList.add('slide-left');
-          setTimeout(() => {
-            changeMonth(1);
-            calendarCard.classList.remove('slide-left');
-          }, 150);
-        }
-      }
-    }, { passive: true });
-
-    // 首次載入繪製
     renderCalendar();
-    lucide.createIcons();
   </script>
 </body>
 </html>
